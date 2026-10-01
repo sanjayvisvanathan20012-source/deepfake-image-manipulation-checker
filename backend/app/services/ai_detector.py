@@ -51,6 +51,14 @@ class SyntheticImageDetector(BaseAIDetector):
     def __init__(self, model_identifier: str = "lightweight-probe-vit-v1"):
         self.model_identifier = model_identifier
         
+        self.device_used = "cpu"
+        self.model = None
+        self.transforms = None
+
+    def _load_model(self):
+        if self.model is not None:
+            return
+            
         # Dynamic device selection: MPS > CUDA > CPU
         if torch.backends.mps.is_available():
             self.device = torch.device("mps")
@@ -76,6 +84,7 @@ class SyntheticImageDetector(BaseAIDetector):
         self.model.eval()
 
     def predict(self, image: Image.Image) -> AIDetectionResult:
+        self._load_model()
         # Convert any mode (RGBA, Grayscale, P) to RGB
         rgb_image = image.convert("RGB")
         
@@ -118,13 +127,13 @@ class SyntheticImageDetector(BaseAIDetector):
 
 
 # Global singleton instance
-_detector_instance: Optional[SyntheticImageDetector] = None
+_model_instance: Optional[SyntheticImageDetector] = None
 
-def get_detector() -> SyntheticImageDetector:
-    global _detector_instance
-    if _detector_instance is None:
-        _detector_instance = SyntheticImageDetector()
-    return _detector_instance
+def get_model() -> SyntheticImageDetector:
+    global _model_instance
+    if _model_instance is None:
+        _model_instance = SyntheticImageDetector()
+    return _model_instance
 
 
 def detect_ai_generated_image(file_buffer: bytes, filename: str) -> AIDetectionResult:
@@ -146,5 +155,5 @@ def detect_ai_generated_image(file_buffer: bytes, filename: str) -> AIDetectionR
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Image processing error: {str(e)}")
         
-    detector = get_detector()
+    detector = get_model()
     return detector.predict(image)

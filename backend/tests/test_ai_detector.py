@@ -2,7 +2,7 @@ import io
 import pytest
 from fastapi.testclient import TestClient
 from app.main import app
-from app.services.ai_detector import get_detector
+from app.services.ai_detector import get_model
 from PIL import Image
 import torch
 
@@ -44,7 +44,7 @@ def test_ai_detector_valid_image():
     assert "caveats" in explanation and len(explanation["caveats"]) > 0
 
 def test_device_selection_mps_or_cpu():
-    detector = get_detector()
+    detector = get_model()
     if torch.backends.mps.is_available():
         assert detector.device_used == "mps"
     elif torch.cuda.is_available():

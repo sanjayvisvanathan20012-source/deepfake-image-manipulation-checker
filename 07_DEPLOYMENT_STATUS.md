@@ -36,8 +36,12 @@ git remote add origin https://github.com/<your-username>/truelens.git
 git push -u origin main
 ```
 
-#### 2. Backend: Hugging Face Spaces (Docker)
-Hugging Face Spaces offers a generous free tier with 16GB RAM for Docker containers.
+#### 2. Backend: Render (512MB Free Tier) or Hugging Face Spaces (Docker)
+The backend container is heavily optimized for ultra-low memory footprints (<180MB RAM) on Render's free tier or Hugging Face Spaces.
+- PyTorch threads are limited to 1 at startup to prevent excessive CPU allocation.
+- The `uvicorn` instance spins exactly 1 worker.
+- Model weights (`SyntheticImageDetector`) are initialized lazily inside `get_model()` only when inference is actually called.
+- The container listens dynamically on `${PORT:-10000}`.
 1. Create a new Space on Hugging Face. Select **Docker** as the SDK and **Blank** template.
 2. In the repository settings of your Space, push the `backend` directory. 
    *(Alternatively, link your GitHub repo and configure the build context to `backend/`)*.

@@ -16,7 +16,7 @@ def create_test_image(format="JPEG", size=(100, 100)):
 def test_health():
     response = client.get("/health")
     assert response.status_code == 200
-    assert response.json() == {"status": "ok"}
+    assert response.json() == {"status": "healthy"}
 
 def test_ingestion_valid_jpeg():
     img = Image.new('RGB', (100, 100))

@@ -1,4 +1,6 @@
 import os
+import torch
+torch.set_num_threads(1)
 from fastapi import FastAPI, UploadFile, File, Request
 from fastapi.middleware.cors import CORSMiddleware
 from app.services.metadata import extract_metadata
@@ -41,10 +43,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/")
 @app.get("/health")
 @limiter.exempt
 def health_check():
-    return {"status": "ok"}
+    return {"status": "healthy"}
 
 @app.post("/api/v1/analyze/metadata", response_model=AnalysisResponse)
 async def analyze_metadata(request: Request, file: UploadFile = File(...)):
