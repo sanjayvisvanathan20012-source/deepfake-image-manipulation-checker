@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+pillow
+pydantic
+pytest
+httpx
+python-multipart
+numpy
+scipy
+torch
+torchvision
+slowapi
